@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, type CSSProperties } from 'react'
 import { GameCanvas } from './components/GameCanvas'
 import { useGame } from './game/store'
 import { input, installInput, releaseLock } from './game/input'
@@ -12,6 +12,7 @@ export default function App() {
   const screen = useGame((s) => s.screen)
   const returnTo = useGame((s) => s.returnTo)
   const settings = useGame((s) => s.settings)
+  const toasts = useGame((s) => s.toasts)
 
   useEffect(() => {
     installInput()
@@ -55,13 +56,25 @@ export default function App() {
   }, [screen, returnTo])
 
   const sub = screen === 'settings' || screen === 'controls'
+  const hudVisible = screen === 'playing' || screen === 'paused' || (sub && returnTo === 'paused')
   return (
     <div className="app">
       <Suspense fallback={<div className="loading">INITIALISING RIFT…</div>}>
         <GameCanvas />
       </Suspense>
       <div className="overlay">
-        {(screen === 'playing' || screen === 'paused' || (sub && returnTo === 'paused')) && <HUD />}
+        {hudVisible ? (
+          <HUD />
+        ) : (
+          <div className="toasts" style={{ zIndex: 5, pointerEvents: 'none' }}>
+            {toasts.map((t) => (
+              <div key={t.id} className="toast" style={{ '--tc': t.color } as CSSProperties}>
+                <b>{t.text}</b>
+                {t.sub && <span>{t.sub}</span>}
+              </div>
+            ))}
+          </div>
+        )}
         {screen === 'menu' && <MainMenu />}
         {screen === 'levelSelect' && <LevelSelect />}
         {screen === 'settings' && <SettingsScreen />}

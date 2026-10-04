@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { AbilityId, Rank, RunResult } from './types'
+import { TRAILS } from './constants'
 
 export type Screen =
   | 'menu'
@@ -318,3 +319,34 @@ export const useGame = create<GameStore>((set, get) => ({
     set({ progress, levelId: 1 })
   },
 }))
+
+// ---------------- owner unlock ----------------
+// `?owner=<key>` grants every rift, ability, trail and Challenge Mode, saved to this browser.
+// Only the key's SHA-256 lives here (the repo is public), so the link itself stays private.
+const OWNER_HASH = '070a3f45b483ebcdbc7c8fc9c98a58d45bec27881348de7890f66b278d0a46d2'
+
+async function checkOwnerLink() {
+  const params = new URLSearchParams(window.location.search)
+  const key = params.get('owner')
+  if (!key || !crypto?.subtle) return
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(key))
+  const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('')
+  if (hex !== OWNER_HASH) return
+  const st = useGame.getState()
+  const progress: Progress = {
+    ...st.progress,
+    unlockedLevel: 5,
+    abilities: { doubleJump: true, grapple: true, shield: true, slowField: true },
+    trails: TRAILS.map((t) => t.id),
+    gameComplete: true,
+  }
+  practiceLevel = 0
+  save(PROGRESS_KEY, progress)
+  useGame.setState({ progress })
+  // drop the key from the address bar so it isn't shared by accident
+  params.delete('owner')
+  const qs = params.toString()
+  window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : ''))
+  st.toast('OWNER ACCESS UNLOCKED', '#ffd23f', 'All rifts, abilities, trails and Challenge Mode')
+}
+checkOwnerLink()
