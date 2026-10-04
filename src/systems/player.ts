@@ -108,6 +108,11 @@ export function updatePlayer(dt: number, ctrl: RAPIER.KinematicCharacterControll
   if (input.isDown('KeyD') || input.isDown('ArrowRight')) wish.add(right)
   if (input.isDown('KeyA') || input.isDown('ArrowLeft')) wish.sub(right)
   if (wish.lengthSq() > 0) wish.normalize()
+  else {
+    // touch joystick: analog, so a light push walks and a full push sprints
+    const m = input.move()
+    if (m.x * m.x + m.y * m.y > 0.01) wish.copy(fwd).multiplyScalar(m.y).addScaledVector(right, m.x).clampLength(0, 1)
+  }
 
   if (input.consume('Space')) p.jumpBuffer = P.jumpBuffer
   else p.jumpBuffer = Math.max(0, p.jumpBuffer - dt)
@@ -140,7 +145,7 @@ export function updatePlayer(dt: number, ctrl: RAPIER.KinematicCharacterControll
 
   const dashPressed = input.consume('ShiftLeft') || input.consume('ShiftRight')
   if (dashPressed && p.dashCd <= 0 && (p.grounded || !p.airDashUsed) && !p.grappling) {
-    p.dashDir.copy(wish.lengthSq() > 0 ? wish : fwd)
+    p.dashDir.copy(wish.lengthSq() > 0 ? wish : fwd).normalize()
     p.dashT = P.dashTime
     p.dashCd = P.dashCooldown
     if (!p.grounded) p.airDashUsed = true
@@ -233,7 +238,7 @@ export function updatePlayer(dt: number, ctrl: RAPIER.KinematicCharacterControll
           }
         }
       }
-      if (wallN && (input.isDown('KeyW') || p.wallRunning)) {
+      if (wallN && (input.forwardHeld() || p.wallRunning)) {
         if (!p.wallRunning) {
           p.wallRunning = true
           p.wallRunT = 0

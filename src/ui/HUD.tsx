@@ -4,6 +4,10 @@ import { rt } from '../game/runtime'
 import { formatTime } from '../game/scoring'
 import { getLevel } from '../levels'
 import { COLORS } from '../game/constants'
+import { isTouchDevice } from '../game/input'
+import { touchHint } from './TouchControls'
+
+const touch = isTouchDevice()
 
 const ICONS: Record<string, ReactNode> = {
   dash: <path d="M3 12h11M10 6l6 6-6 6M17 6l4 6-4 6" />,
@@ -222,7 +226,7 @@ export function HUD() {
 
       {hud.hint && !hud.dead && (
         <div className="hint" key={hud.hint}>
-          {hud.hint}
+          {touch ? touchHint(hud.hint) : hud.hint}
         </div>
       )}
       {hud.prompt && !hud.dead && <div className="prompt">{hud.prompt}</div>}

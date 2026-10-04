@@ -274,3 +274,63 @@ input[type='range']::-moz-range-thumb { width: 14px; height: 14px; background: v
 .pause-list { display: flex; flex-direction: column; gap: 10px; align-items: stretch; width: min(360px, 100%); margin: 18px auto 0; }
 .pause-list .btn { justify-content: center; }
 .loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--display); letter-spacing: 0.3em; color: var(--safe); }
+
+/* ---------- touch / mobile ---------- */
+.touch-layer { position: absolute; inset: 0; pointer-events: none; touch-action: none; }
+.touch-layer > * { pointer-events: auto; }
+.touch-pad { position: absolute; inset: 0; touch-action: none; }
+.stick { position: absolute; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; border: 2px solid rgba(54, 200, 255, 0.45); background: rgba(10, 20, 40, 0.35); pointer-events: none; }
+.stick .knob { position: absolute; left: 31px; top: 31px; width: 50px; height: 50px; border-radius: 50%; background: rgba(54, 200, 255, 0.55); box-shadow: 0 0 18px rgba(54, 200, 255, 0.7); }
+.stick-hint { position: absolute; left: 64px; bottom: 92px; width: 92px; height: 92px; border-radius: 50%; border: 2px dashed rgba(54, 200, 255, 0.35); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 10px; letter-spacing: 0.2em; color: rgba(159, 226, 255, 0.6); pointer-events: none; }
+.touch-buttons { position: absolute; right: 18px; bottom: 18px; width: 230px; height: 200px; pointer-events: none; }
+.tbtn {
+  position: absolute; width: 58px; height: 58px; border-radius: 50%; pointer-events: auto; touch-action: none; overflow: hidden;
+  border: 2px solid rgba(54, 200, 255, 0.6); background: rgba(8, 16, 34, 0.6); color: #dff4ff; font-family: var(--display); font-size: 9.5px; letter-spacing: 0.08em;
+  -webkit-tap-highlight-color: transparent; user-select: none;
+}
+.tbtn:active { background: rgba(54, 200, 255, 0.35); transform: scale(0.94); }
+.tbtn.big { width: 76px; height: 76px; font-size: 11px; }
+.tbtn.active { border-color: var(--gold); box-shadow: 0 0 16px rgba(255, 210, 63, 0.6); }
+.tbtn .tcd { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); transform-origin: bottom; pointer-events: none; }
+.tbtn-jump { right: 0; bottom: 0; border-color: rgba(61, 255, 154, 0.7); }
+.tbtn-pulse { right: 88px; bottom: 6px; border-color: rgba(255, 210, 63, 0.7); }
+.tbtn-dash { right: 6px; bottom: 90px; }
+.tbtn-grapple { right: 74px; bottom: 96px; }
+.tbtn-shield { right: 166px; bottom: 30px; }
+.tbtn-slow { right: 140px; bottom: 104px; border-color: rgba(180, 92, 255, 0.7); }
+.tpause { position: absolute; top: 12px; right: 50%; transform: translateX(170px); width: 42px; height: 42px; border-radius: 8px; border: 1px solid var(--line); background: rgba(8, 16, 34, 0.6); color: var(--text); font-size: 14px; pointer-events: auto; }
+.rotate-hint { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: rgba(4, 6, 14, 0.94); text-align: center; padding: 24px; }
+.rotate-hint b { font-family: var(--display); letter-spacing: 0.2em; color: var(--safe); }
+.rotate-hint span { color: var(--dim); font-size: 14px; }
+.rotate-hint .phone { width: 44px; height: 74px; border: 3px solid var(--safe); border-radius: 8px; animation: rotate-phone 1.8s ease-in-out infinite; }
+@keyframes rotate-phone { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+
+.is-touch .hud-bc, .is-touch .lockhint, .is-touch .prompt { display: none; }
+.is-touch .hint { bottom: auto; top: 64px; font-size: 13px; padding: 7px 14px; }
+.is-touch .hud-bl { bottom: auto; top: 64px; width: 200px; }
+.is-touch .hud-tl { max-width: 42vw; }
+.is-touch .hud-obj { font-size: 12.5px; }
+.is-touch .toasts { top: 70px; }
+
+/* short landscape phones */
+@media (max-height: 520px) {
+  .logo { margin-bottom: 14px; }
+  .logo h1 { font-size: clamp(30px, 9vh, 56px); }
+  .logo .tag { margin-top: 6px; font-size: 12px; }
+  .menu-buttons { gap: 7px; }
+  .menu-buttons .btn { min-width: 250px; padding: 9px 18px; font-size: 12px; }
+  .menu-buttons .btn.primary { font-size: 14px; }
+  .menu-stats { margin-top: 14px; gap: 18px; font-size: 11px; }
+  .menu-stats b { font-size: 16px; }
+  .panel { padding: 18px; }
+  .hud-time { font-size: 20px; }
+  .meter .track { height: 9px; }
+}
+@media (max-height: 420px) {
+  .menu { padding-top: 10px; padding-bottom: 10px; }
+  .logo .kicker, .version { display: none; }
+  .logo { margin-bottom: 10px; }
+  .logo h1 { font-size: clamp(26px, 9vh, 40px); }
+  .menu-buttons .btn { padding: 7px 16px; }
+  .menu-stats { margin-top: 10px; }
+}

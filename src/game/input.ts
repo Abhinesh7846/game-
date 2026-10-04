@@ -4,6 +4,12 @@ const down = new Set<string>()
 const pressed = new Set<string>()
 let mouseDX = 0
 let mouseDY = 0
+/** analog move from the touch joystick: x = strafe right, y = forward, length <= 1 */
+let moveX = 0
+let moveY = 0
+
+/** Phones/tablets: coarse primary pointer (touchscreen laptops keep mouse + keyboard). */
+export const isTouchDevice = () => typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches
 
 export const input = {
   isDown: (code: string) => down.has(code),
@@ -26,7 +32,29 @@ export const input = {
     pressed.clear()
     mouseDX = 0
     mouseDY = 0
+    moveX = 0
+    moveY = 0
   },
+  /** analog stick state (touch) */
+  move: () => ({ x: moveX, y: moveY }),
+  setMove: (x: number, y: number) => {
+    moveX = x
+    moveY = y
+  },
+  /** look delta in mouse-pixel units (touch drag) */
+  addLook: (dx: number, dy: number) => {
+    mouseDX += dx
+    mouseDY += dy
+  },
+  /** virtual button press/release (touch) */
+  press: (code: string) => {
+    if (!down.has(code)) pressed.add(code)
+    down.add(code)
+  },
+  release: (code: string) => {
+    down.delete(code)
+  },
+  forwardHeld: () => down.has('KeyW') || down.has('ArrowUp') || moveY > 0.5,
   locked: () => document.pointerLockElement != null,
 }
 
@@ -66,6 +94,7 @@ export function installInput() {
 }
 
 export function requestLock() {
+  if (isTouchDevice()) return
   const canvas = document.querySelector('canvas')
   if (!canvas || document.pointerLockElement) return
   try {

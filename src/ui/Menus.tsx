@@ -6,7 +6,17 @@ import { COLORS, TRAILS } from '../game/constants'
 import { sfx, unlockAudio } from '../game/audio'
 import { requestLock } from '../game/input'
 
+/** Phones: go fullscreen + landscape on launch (both need the tap gesture; failures are harmless). */
+function goFullscreen() {
+  if (!window.matchMedia?.('(pointer: coarse)').matches || document.fullscreenElement) return
+  const el = document.documentElement
+  el.requestFullscreen?.()
+    .then(() => (screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> })?.lock?.('landscape'))
+    .catch(() => {})
+}
+
 function launch(id: number, challenge = false) {
+  goFullscreen()
   unlockAudio()
   sfx.uiConfirm()
   useGame.getState().startLevel(id, challenge)
@@ -294,6 +304,13 @@ const KEYS: [string, string][] = [
   ['ESC / P', 'Pause'],
 ]
 
+const TOUCH: [string, string][] = [
+  ['LEFT THUMB', 'Drag anywhere on the left to move'],
+  ['RIGHT THUMB', 'Drag on the right to look / aim'],
+  ['JUMP · BLAST', 'Big buttons, bottom right'],
+  ['DASH · HOOK', 'Hook grapples to the anchor at screen centre'],
+]
+
 export function ControlsScreen() {
   const close = useGame((st) => st.closeSub)
   return (
@@ -302,7 +319,7 @@ export function ControlsScreen() {
         <h2>CONTROLS</h2>
         <p className="sub">Wall-run by sprinting along a wall while holding W. Grapple targets the anchor nearest your crosshair.</p>
         <div className="keys">
-          {KEYS.map(([k, d]) => (
+          {(window.matchMedia?.('(pointer: coarse)').matches ? TOUCH : KEYS).map(([k, d]) => (
             <div key={k} className="key-row">
               <span className="kbd">{k}</span>
               <span>{d}</span>

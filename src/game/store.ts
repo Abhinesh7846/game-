@@ -90,6 +90,18 @@ export interface Toast {
 const SETTINGS_KEY = 'rift-runners.settings.v1'
 const PROGRESS_KEY = 'rift-runners.progress.v1'
 
+/** First-run graphics pick: phones and weak machines start lower so the first impression isn't a slideshow. */
+function autoQuality(): Quality {
+  if (typeof window === 'undefined') return 'high'
+  const nav = navigator as Navigator & { deviceMemory?: number }
+  const cores = nav.hardwareConcurrency ?? 8
+  const mem = nav.deviceMemory ?? 8
+  const touch = window.matchMedia?.('(pointer: coarse)').matches
+  if (cores <= 2 || mem <= 2) return 'low'
+  if (touch || cores <= 4 || mem <= 4) return 'medium'
+  return 'high'
+}
+
 const defaultSettings: Settings = {
   sensitivity: 1,
   invertY: false,
@@ -97,7 +109,7 @@ const defaultSettings: Settings = {
   masterVolume: 0.8,
   musicVolume: 0.45,
   sfxVolume: 0.8,
-  quality: 'high',
+  quality: autoQuality(),
   screenShake: 1,
   showFps: false,
 }

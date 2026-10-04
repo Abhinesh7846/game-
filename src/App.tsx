@@ -1,12 +1,15 @@
 import { Suspense, useEffect, type CSSProperties } from 'react'
 import { GameCanvas } from './components/GameCanvas'
 import { useGame } from './game/store'
-import { input, installInput, releaseLock } from './game/input'
+import { input, installInput, isTouchDevice, releaseLock } from './game/input'
 import { setMusic, setVolumes } from './game/audio'
 import { rt } from './game/runtime'
 import { HUD } from './ui/HUD'
 import { ControlsScreen, LevelSelect, LockerScreen, MainMenu, SettingsScreen } from './ui/Menus'
 import { FailedScreen, LevelComplete, PauseMenu } from './ui/Screens'
+import { RotateHint, TouchControls } from './ui/TouchControls'
+
+const touch = isTouchDevice()
 
 export default function App() {
   const screen = useGame((s) => s.screen)
@@ -35,10 +38,20 @@ export default function App() {
         else if (st.screen === 'levelSelect') st.setScreen('menu')
       }
     }
+    // switching apps / tabs mid-run pauses instead of letting enemies chew on you
+    const onHidden = () => {
+      const st = useGame.getState()
+      if (document.hidden && st.screen === 'playing' && !rt.completed) {
+        st.setScreen('paused')
+        releaseLock()
+      }
+    }
     document.addEventListener('pointerlockchange', onLock)
+    document.addEventListener('visibilitychange', onHidden)
     window.addEventListener('keydown', onKey)
     return () => {
       document.removeEventListener('pointerlockchange', onLock)
+      document.removeEventListener('visibilitychange', onHidden)
       window.removeEventListener('keydown', onKey)
     }
   }, [])
@@ -58,7 +71,7 @@ export default function App() {
   const sub = screen === 'settings' || screen === 'controls'
   const hudVisible = screen === 'playing' || screen === 'paused' || (sub && returnTo === 'paused')
   return (
-    <div className="app">
+    <div className={`app ${touch ? 'is-touch' : ''}`}>
       <Suspense fallback={<div className="loading">INITIALISING RIFT…</div>}>
         <GameCanvas />
       </Suspense>
@@ -75,6 +88,8 @@ export default function App() {
             ))}
           </div>
         )}
+        {touch && screen === 'playing' && <TouchControls />}
+        {touch && screen === 'playing' && <RotateHint />}
         {screen === 'menu' && <MainMenu />}
         {screen === 'levelSelect' && <LevelSelect />}
         {screen === 'settings' && <SettingsScreen />}
