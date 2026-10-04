@@ -51,6 +51,8 @@ export function installInput() {
     }
   })
   window.addEventListener('mousedown', (e) => {
+    // clicks on menus or the click that captures the mouse must not fire abilities
+    if (!document.pointerLockElement) return
     const code = e.button === 0 ? 'Mouse0' : e.button === 2 ? 'Mouse2' : 'Mouse1'
     if (!down.has(code)) pressed.add(code)
     down.add(code)

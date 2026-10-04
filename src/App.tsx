@@ -47,7 +47,7 @@ export default function App() {
   }, [settings.masterVolume, settings.musicVolume, settings.sfxVolume])
 
   useEffect(() => {
-    if (screen !== 'playing') input.clear()
+    input.clear() // never carry a press from a menu into gameplay (or back)
     const inRun = ['playing', 'paused', 'complete', 'failed'].includes(screen) || (['settings', 'controls'].includes(screen) && returnTo === 'paused')
     if (inRun) {
       if (!rt.boss?.active) setMusic('level')

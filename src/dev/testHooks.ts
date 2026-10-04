@@ -14,10 +14,11 @@ w.__tap = async (code: string) => {
   await w.__step(1)
   w.__key(code, false)
 }
+/** Simulated pulse: synthetic clicks are ignored without pointer lock, so feed the key directly. */
 w.__click = async () => {
-  window.dispatchEvent(new MouseEvent('mousedown', { button: 0 }))
+  w.__key('Mouse0', true)
   await w.__step(1)
-  window.dispatchEvent(new MouseEvent('mouseup', { button: 0 }))
+  w.__key('Mouse0', false)
 }
 w.__tp = (x: number, y: number, z: number, yaw = 0) => {
   const rt = w.__rift
