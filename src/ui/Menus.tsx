@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from 'react'
-import { useGame, rankValue, type Quality } from '../game/store'
+import { useGame, rankValue, practiceLevel, type Quality } from '../game/store'
 import { LEVELS } from '../levels'
 import { formatTime } from '../game/scoring'
 import { COLORS, TRAILS } from '../game/constants'
@@ -17,7 +17,7 @@ export function MainMenu() {
   const progress = useGame((s) => s.progress)
   const openSub = useGame((s) => s.openSub)
   const setScreen = useGame((s) => s.setScreen)
-  const next = Math.min(progress.unlockedLevel, 5)
+  const next = practiceLevel || Math.min(progress.unlockedLevel, 5)
   const nextLevel = LEVELS[next - 1]
   const cleared = Object.keys(progress.records).length
   const sRanks = Object.values(progress.records).filter((r) => rankValue(r.bestRank) >= rankValue('S')).length
@@ -38,6 +38,11 @@ export function MainMenu() {
           RUNNERS
         </h1>
         <div className="tag">ZERO GRAVITY TRIALS</div>
+        {practiceLevel > 0 && (
+          <div style={{ marginTop: 14, color: COLORS.secret, fontFamily: 'var(--display)', fontSize: 12, letterSpacing: '0.2em' }}>
+            PRACTICE LINK · RIFT {practiceLevel} UNLOCKED · PROGRESS NOT SAVED
+          </div>
+        )}
       </div>
       <div className="menu-buttons">
         <button className="btn primary" onClick={() => launch(next)}>

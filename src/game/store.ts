@@ -124,7 +124,11 @@ function load<T>(key: string, fallback: T): T {
   }
 }
 
+/** Set when the page was opened with `?level=N`; practice visits never write progress to storage. */
+export let practiceLevel = 0
+
 function save(key: string, value: unknown) {
+  if (key === PROGRESS_KEY && practiceLevel) return
   try {
     localStorage.setItem(key, JSON.stringify(value))
   } catch {
@@ -202,6 +206,15 @@ export const useGame = create<GameStore>((set, get) => ({
   progress: (() => {
     const p = load(PROGRESS_KEY, defaultProgress())
     p.abilities = { ...defaultProgress().abilities, ...p.abilities }
+    // Practice link: `?level=N` opens rift N with every earlier unlock, for this visit only (nothing is saved).
+    const jump = Number(new URLSearchParams(window.location.search).get('level'))
+    if (jump >= 1 && jump <= 5) {
+      p.unlockedLevel = Math.max(p.unlockedLevel, jump)
+      if (jump >= 2) p.abilities = { ...p.abilities, doubleJump: true, grapple: true }
+      if (jump >= 3) p.abilities.shield = true
+      if (jump >= 4) p.abilities.slowField = true
+      practiceLevel = jump
+    }
     return p
   })(),
   hud: emptyHud(),
