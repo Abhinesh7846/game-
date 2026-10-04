@@ -1,0 +1,77 @@
+import { level, plat, tower } from './builders'
+
+/** Neon Spires — vertical climb across floating towers. Grapple, movers, elevators and the first hostile drones. */
+export const level2 = level({
+  id: 2,
+  name: 'Neon Spires',
+  subtitle: 'Vertical Trial',
+  blurb: 'Climb a forest of floating towers. Grapple the gaps, ride the lifts, and swat scout drones out of the sky.',
+  introduces: ['Grapple anchors', 'Moving platforms', 'Scout drones', 'Secrets'],
+  parTime: 95,
+  killY: -26,
+  spawn: [0, 0, 3],
+  spawnYaw: 0,
+  theme: {
+    skyTop: '#12021f',
+    skyBottom: '#5a1a6e',
+    fog: '#2a0c3c',
+    accent: '#ff4fd8',
+    sun: '#ffb3f0',
+    nebula: '#ff3dbb',
+  },
+  coresRequired: 5,
+  platforms: [
+    tower(0, 0, 0, 10, 10),
+    tower(0, 1.5, -12, 5, 5),
+    tower(0, 4, -37, 6, 6),
+    tower(0, 7, -60, 7, 7),
+    tower(13, 15, -60, 6, 6),
+    plat(13, 20, -74, 4, 4, 1, 'glass'), // secret island
+    tower(34, 19, -60, 7, 7),
+    plat(34, 21.5, -68, 3, 3),
+    plat(31, 24, -74, 3, 3),
+    plat(35, 26.5, -80, 3, 3),
+    tower(35, 27, -110, 10, 12),
+  ],
+  movers: [
+    { id: 'm1', size: [4, 0.6, 4], path: [[0, 2.5, -19.5], [0, 2.5, -31]], speed: 4, wait: 0.6 },
+    { id: 'lift', size: [3.5, 0.6, 3.5], path: [[6, 7.2, -60], [6, 15.2, -60]], speed: 3, wait: 1.2 },
+    { id: 'm3', size: [4, 0.6, 4], path: [[35, 26.8, -86], [35, 26.8, -100]], speed: 4.5, wait: 0.5 },
+  ],
+  anchors: [
+    [0, 12, -51],
+    [26, 24, -60],
+    [13, 25, -74.5],
+  ],
+  gates: [{ id: 'g1', pos: [35, 29.5, -106.5], size: [10, 5, 0.5], color: 'core', requires: { cores: 5 } }],
+  cores: [
+    [0, 4, -25],
+    [0, 5.3, -37],
+    [6, 12, -60],
+    [13, 16.3, -60],
+    [34, 20.3, -60],
+    [35, 27.8, -80],
+  ],
+  secrets: [[13, 21.3, -74]],
+  checkpoints: [
+    [0, 7, -62.5],
+    [34, 19, -62],
+  ],
+  enemies: [
+    { type: 'scout', pos: [0, 9.5, -60], patrol: [[-5, 9.5, -56], [5, 9.5, -56], [5, 9.5, -65], [-5, 9.5, -65]] },
+    { type: 'scout', pos: [3, 10.5, -64], patrol: [[5, 10.5, -65], [-5, 10.5, -65], [-5, 10.5, -56], [5, 10.5, -56]] },
+    { type: 'scout', pos: [34, 21.5, -57], patrol: [[30, 21.5, -56], [38, 21.5, -56], [38, 21.5, -64], [30, 21.5, -64]] },
+    { type: 'scout', pos: [36, 22, -63], patrol: [[38, 22, -64], [30, 22, -64], [30, 22, -56], [38, 22, -56]] },
+    { type: 'scout', pos: [35, 29, -93], patrol: [[31, 29, -88], [39, 29, -98]] },
+  ],
+  hints: [
+    { pos: [0, 0, 1], radius: 4, text: 'Neon Spires: climb to the summit portal. Collect at least 5 cores.' },
+    { pos: [0, 1.5, -12], radius: 3, text: 'Moving platforms carry you — time the jump' },
+    { pos: [0, 4, -37], radius: 3.5, text: 'Aim near a BLUE ANCHOR and press E or RIGHT CLICK to GRAPPLE' },
+    { pos: [0, 7, -60], radius: 4, text: 'Scout drones! LEFT CLICK pulse when they dive in' },
+    { pos: [13, 15, -60], radius: 3, text: 'Ride the lift, then grapple onward. Is that an anchor up high?' },
+    { pos: [34, 19, -60], radius: 3, text: 'Chain DOUBLE JUMPS up the floating steps' },
+  ],
+  portal: [35, 27, -112],
+  unlocks: ['shield'],
+})
